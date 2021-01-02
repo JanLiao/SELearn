@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2020
+  ~ User:jan
+  ~ File:mybatis-config.xml
+  ~ Date:2020/06/01 11:36:01
+  -->
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="football/util/jdbc.properties"></properties>
+    <environments default="development">
+        <!-- 可以配置多个environment 来达到多数据源的配置，或者说能达到 生产、测试、开发环境的切换  -->
+        <environment id="development">
+            <!--  指定jdbc的事务管理，还没跟spring结合成事务管理 -->
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <!-- 上面指定了数据库配置文件， 配置文件里面也是对应的这四个属性 一定要跟resource.properties当中的属性对应上 -->
+                <property name="driver" value="${jdbc.driver}" />
+                <property name="url" value="${jdbc.url}" />
+                <property name="username" value="${jdbc.username}" />
+                <property name="password" value="${jdbc.password}" />
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- 映射文件，mybatis精髓， 后面才会细讲  ,扫描mybatis的mapper映射文件,一定要放在resource文件夹下 -->
+    <!--  mapper resource= 的值 必须是resource文件夹下的路径值  -->
+    <mappers>
+        <mapper resource="football/dao/UserMapper.xml"/>
+    </mappers>
+
+</configuration>

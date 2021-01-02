@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2021
+  ~ User:jan
+  ~ File:MatchMapper.xml
+  ~ Date:2021/01/02 17:08:02
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="football.dao.MatchDao">
+    <resultMap id="matchMap" type="football.model.Match">
+        <id column="id" property="id"/>
+        <result column="match_id" property="matchId"/>
+        <result column="match_time" property="matchTime"/>
+        <result column="home_name" property="homeName"/>
+        <result column="guest_name" property="guestName"/>
+        <result column="full_score" property="fullScore"/>
+        <result column="medium_score" property="mediumScore"/>
+        <result column="asian_odds" property="asianOdds"/>
+        <result column="big_odds" property="bigOdds"/>
+    </resultMap>
+
+    <insert id="insertMatchList" useGeneratedKeys="true" keyProperty="id">
+        insert into match (match_id, league, match_time,
+        home_name, guest_name, full_score, medium_score, asian_odds, big_odds) values
+        <foreach collection ="matchList" item="match" index= "index" separator =",">
+            (
+            #{match.matchId}, #{match.league},
+            #{match.matchTime}, #{match.homeName},
+            #{match.guestName}, #{match.fullScore},
+            #{match.mediumScore}, #{match.asianOdds},
+            #{match.bigOdds}
+            )
+        </foreach >
+    </insert>
+
+    <select id="queryMatch" resultMap="matchMap">
+        select * from match where match_id = #{matchId} limit 1
+    </select>
+</mapper>

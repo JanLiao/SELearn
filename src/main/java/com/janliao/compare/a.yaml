@@ -1,0 +1,12 @@
+--- !com.janliao.compare.Student1
+age: 20
+list: 
+  - ab
+  - cd
+map: 
+  jan: jj
+  fang: sf
+name: jj
+p: !com.janliao.compare.Person
+  age: 50
+  name: jan

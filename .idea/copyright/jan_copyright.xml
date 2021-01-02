@@ -1,0 +1,6 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="notice" value="Copyright (c) &amp;#36;today.year&#10;User:&amp;#36;username&#10;File:&amp;#36;file.fileName&#10;Date:&amp;#36;file.lastModified.format(&quot;yyyy/MM/dd HH:mm:dd&quot;)" />
+    <option name="myName" value="jan-copyright" />
+  </copyright>
+</component>
