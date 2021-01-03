@@ -54,11 +54,20 @@ public class QiuTanAsianOdds implements AsianOdds {
         String homeName = match.getHomeName();
         String guestName = match.getGuestName();
         List<Company> list = getAllCompanyId(matchId);
+        for (Company company : list) {
+            String rootPath = ROOT_PATH + date + File.separator +
+                    homeName + "-" + guestName + File.separator;
+            queryEuropeCapData(matchId, company.getCompanyId(),
+                    rootPath + EUROPE_PATH + File.separator +
+                            company.getCompanyName());
+            queryHandiCapData(matchId, company.getCompanyId(),
+                    rootPath + ASIAN_PATH + File.separator +
+                            company.getCompanyName());
+            queryOverUnderData(matchId, company.getCompanyId(),
+                    rootPath + OVERUNDER_PATH + File.separator +
+                            company.getCompanyName());
+        }
         list.forEach((company) -> {
-            // List<EuropeCap> europeCapList = queryEuropeCap(matchId, company.getCompanyId());
-            // List<HandiCap> handiCapList = queryHandiCap(matchId, company.getCompanyId());
-            // List<OverUnder> overUnderList = queryOverUnder(matchId, company.getCompanyId());
-
             String rootPath = ROOT_PATH + date + File.separator +
                     homeName + "-" + guestName + File.separator;
             Supplier<Boolean> supplierEuropeCap =
@@ -84,11 +93,11 @@ public class QiuTanAsianOdds implements AsianOdds {
     private static Boolean queryHandiCapData(long matchId, long companyId, String path) {
         List<HandiCap> handiCapList = queryHandiCapData(
                 QIUTAN_MATCH_URL + matchId + "&companyid=" + companyId + "&l=0");
-        saveData(handiCapList, path, "handicap_data.txt");
+        saveHandiCapData(handiCapList, path, "handicap_data.txt");
         return true;
     }
 
-    private static void saveData(List<HandiCap> handiCapList, String path, String fileName) {
+    private static void saveHandiCapData(List<HandiCap> handiCapList, String path, String fileName) {
         FileUtil.createFile(path);
         List<String> stringList = handiCapList
                 .stream()
@@ -98,24 +107,41 @@ public class QiuTanAsianOdds implements AsianOdds {
         FileUtil.writeFile(filePath, stringList);
     }
 
+    private static void saveEuropeCapData(List<EuropeCap> handiCapList, String path, String fileName) {
+        FileUtil.createFile(path);
+        List<String> stringList = handiCapList
+                .stream()
+                .map((EuropeCap::parseObject))
+                .collect(Collectors.toList());
+        String filePath = path + File.separator + fileName;
+        FileUtil.writeFile(filePath, stringList);
+    }
+
+    private static void saveOverUnderData(List<OverUnder> handiCapList, String path, String fileName) {
+        FileUtil.createFile(path);
+        List<String> stringList = handiCapList
+                .stream()
+                .map((OverUnder::parseObject))
+                .collect(Collectors.toList());
+        String filePath = path + File.separator + fileName;
+        FileUtil.writeFile(filePath, stringList);
+    }
+
     private static Boolean queryOverUnderData(long matchId, long companyId, String path) {
-        List<HandiCap> handiCapList = queryHandiCapData(
-                QIUTAN_BIG_URL + matchId + "&companyid=" + companyId + "&l=0");
-        saveData(handiCapList, path, "overunder_data.txt");
+        List<OverUnder> handiCapList = queryOverUnder(matchId, companyId);
+        saveOverUnderData(handiCapList, path, "overunder_data.txt");
         return true;
     }
 
     private static Boolean queryEuropeCapData(long matchId, long companyId, String path) {
-        List<HandiCap> handiCapList = queryHandiCapData(
-                QIUTAN_EUR_URL + matchId + "&companyid=" + companyId + "&l=0");
-        saveData(handiCapList, path, "europecap_data.txt");
+        List<EuropeCap> handiCapList = queryEuropeCap(matchId, companyId);
+        saveEuropeCapData(handiCapList, path, "europecap_data.txt");
         return true;
     }
 
     private static List<HandiCap> queryHandiCapData(String url) {
         try {
-            Document document = JsoupUtil.getDocumentByURL(url);
-            return parseHandiCapData(document);
+            return parseHandiCapData(JsoupUtil.getDocumentByURI(url));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,7 +150,6 @@ public class QiuTanAsianOdds implements AsianOdds {
 
     private static List<HandiCap> parseHandiCapData(Document document) {
         Elements postItems = document.select("tr");
-        postItems.forEach(System.out::println);
         return postItems.stream()
                 .map((element -> {
                     Elements elements = element.select("td");
@@ -148,7 +173,7 @@ public class QiuTanAsianOdds implements AsianOdds {
 
     private List<HandiCap> queryHandiCap(long matchId, long companyId) {
         try {
-            Document document = JsoupUtil.getDocumentByURL(
+            Document document = JsoupUtil.getDocumentByURI(
                     QIUTAN_MATCH_URL + matchId + "&companyid=" + companyId + "&l=0");
             return parseHandiCap(document);
         } catch (IOException e) {
@@ -157,9 +182,8 @@ public class QiuTanAsianOdds implements AsianOdds {
         return Collections.emptyList();
     }
 
-    private List<OverUnder> parseOverUnder(Document document) {
+    private static List<OverUnder> parseOverUnder(Document document) {
         Elements postItems = document.select("tr");
-        postItems.forEach(System.out::println);
         return postItems.stream()
                 .map((element -> {
                     Elements elements = element.select("td");
@@ -183,7 +207,6 @@ public class QiuTanAsianOdds implements AsianOdds {
 
     private List<HandiCap> parseHandiCap(Document document) {
         Elements postItems = document.select("tr");
-        postItems.forEach(System.out::println);
         return postItems.stream()
                 .map((element -> {
                     Elements elements = element.select("td");
@@ -205,13 +228,12 @@ public class QiuTanAsianOdds implements AsianOdds {
                 .collect(Collectors.toList());
     }
 
-    private List<EuropeCap> parseEuropeCap(Document document) {
+    private static List<EuropeCap> parseEuropeCap(Document document) {
         Elements postItems = document.select("tr");
-        postItems.forEach(System.out::println);
         return postItems.stream()
                 .map((element -> {
                     Elements elements = element.select("td");
-                    if (elements.size() == 7 &&
+                    if (elements.size() == 5 &&
                             ("(初盘)".equals(elements.get(6).text().trim())
                                     || "即".equals(elements.get(6).text().trim()))) {
                         EuropeCap europeCap = new EuropeCap();
@@ -229,9 +251,9 @@ public class QiuTanAsianOdds implements AsianOdds {
                 .collect(Collectors.toList());
     }
 
-    private List<EuropeCap> queryEuropeCap(long matchId, long companyId) {
+    private static List<EuropeCap> queryEuropeCap(long matchId, long companyId) {
         try {
-            Document document = JsoupUtil.getDocumentByURL(
+            Document document = JsoupUtil.getDocumentByURI(
                     QIUTAN_EUR_URL + matchId + "&companyid=" + companyId + "&l=0");
             return parseEuropeCap(document);
         } catch (IOException e) {
@@ -240,9 +262,9 @@ public class QiuTanAsianOdds implements AsianOdds {
         return Collections.emptyList();
     }
 
-    private List<OverUnder> queryOverUnder(long matchId, long companyId) {
+    private static List<OverUnder> queryOverUnder(long matchId, long companyId) {
         try {
-            Document document = JsoupUtil.getDocumentByURL(
+            Document document = JsoupUtil.getDocumentByURI(
                     QIUTAN_BIG_URL + matchId + "&companyid=" + companyId + "&l=0");
             return parseOverUnder(document);
         } catch (IOException e) {

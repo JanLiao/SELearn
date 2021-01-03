@@ -27,19 +27,32 @@ public class FileUtil {
 
     public static void writeFile(String path, List<String> dataList) {
         File file = new File(path);
+        FileWriter fileWriter = null;
+        BufferedWriter bufferedWriter = null;
         try {
-            FileWriter fileWriter = new FileWriter(file);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            dataList.forEach((data) -> {
+            fileWriter = new FileWriter(file);
+            bufferedWriter = new BufferedWriter(fileWriter);
+            for (String line : dataList) {
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedWriter != null) {
                 try {
-                    bufferedWriter.write(data);
-                    bufferedWriter.newLine();
+                    bufferedWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+            }
+            if (fileWriter != null) {
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

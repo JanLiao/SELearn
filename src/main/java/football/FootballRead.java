@@ -36,7 +36,10 @@ public class FootballRead {
     public static void main(String[] args) throws IOException {
 //        parseHTML();
         String date = "20201127";
+//        date = "20140715";
+//        date = "20210101";
         OverFootball matchs = new QiuTanOverFootball();
         List<Match> matchList = matchs.queryMatchsByDate(date);
+        System.out.println(matchList);
     }
 }

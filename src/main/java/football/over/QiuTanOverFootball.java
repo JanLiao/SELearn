@@ -33,7 +33,7 @@ public class QiuTanOverFootball implements OverFootball {
     @Override
     public List<Match> queryMatchsByDate(String date) {
         try {
-            Document document = JsoupUtil.getDocumentByURL(QIUTAN_MATCH_URL + date + ".htm");
+            Document document = JsoupUtil.getDocumentByURI(QIUTAN_MATCH_URL + date + ".htm");
             return parseHTML(document).orElseGet(Collections::emptyList);
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,7 +42,8 @@ public class QiuTanOverFootball implements OverFootball {
     }
 
     private Optional<List<Match>> parseHTML(Document document) {
-        Elements postItems = document.select("tbody").get(TBODY_NUM).select("tr");
+        Elements ps = document.select("tbody");
+        Elements postItems = ps.get(ps.size() - 1).select("tr");
         postItems.remove(0);
         List<Match> matchList = postItems.stream()
             .map(item -> parseTD(item)).filter(item -> item != null).collect(Collectors.toList());

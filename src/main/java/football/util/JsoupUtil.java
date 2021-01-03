@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 /**
  * author: janliao
@@ -21,5 +22,14 @@ import java.net.URL;
 public class JsoupUtil {
     public static Document getDocumentByURL(String url) throws IOException {
         return  Jsoup.parse(new URL(url).openStream(), "GBK", url);
+    }
+
+    public static Document getDocumentByURI(String url) throws IOException {
+        try {
+            TimeUnit.MILLISECONDS.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return JsoupUtil.getDocumentByURL(url);
     }
 }
