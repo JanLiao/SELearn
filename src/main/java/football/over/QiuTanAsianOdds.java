@@ -67,26 +67,6 @@ public class QiuTanAsianOdds implements AsianOdds {
                     rootPath + OVERUNDER_PATH + File.separator +
                             company.getCompanyName());
         }
-        list.forEach((company) -> {
-            String rootPath = ROOT_PATH + date + File.separator +
-                    homeName + "-" + guestName + File.separator;
-            Supplier<Boolean> supplierEuropeCap =
-                    () -> queryEuropeCapData(matchId, company.getCompanyId(),
-                            rootPath + EUROPE_PATH + File.separator +
-                                    company.getCompanyName());
-            Supplier<Boolean> supplierHandiCap =
-                    () -> queryHandiCapData(matchId, company.getCompanyId(),
-                            rootPath + ASIAN_PATH + File.separator +
-                                    company.getCompanyName());
-            Supplier<Boolean> supplierOverUnder =
-                    () -> queryOverUnderData(matchId, company.getCompanyId(),
-                            rootPath + OVERUNDER_PATH + File.separator +
-                                    company.getCompanyName());
-
-            Arrays.asList(supplierEuropeCap, supplierHandiCap, supplierOverUnder)
-                    .parallelStream().map(Supplier::get)
-                    .collect(Collectors.toList());
-        });
         return Collections.emptyList();
     }
 
@@ -234,14 +214,14 @@ public class QiuTanAsianOdds implements AsianOdds {
                 .map((element -> {
                     Elements elements = element.select("td");
                     if (elements.size() == 5 &&
-                            ("(初盘)".equals(elements.get(6).text().trim())
-                                    || "即".equals(elements.get(6).text().trim()))) {
+                            ("(初盘)".equals(elements.get(4).text().trim())
+                                    || "即".equals(elements.get(4).text().trim()))) {
                         EuropeCap europeCap = new EuropeCap();
-                        europeCap.setHomeName(elements.get(2).text().trim());
-                        europeCap.setCap(elements.get(3).text().trim());
-                        europeCap.setGuestName(elements.get(4).text().trim());
-                        europeCap.setChangeTime(elements.get(5).text().trim());
-                        europeCap.setState(elements.get(6).text().trim());
+                        europeCap.setHomeName(elements.get(0).text().trim());
+                        europeCap.setCap(elements.get(1).text().trim());
+                        europeCap.setGuestName(elements.get(2).text().trim());
+                        europeCap.setChangeTime(elements.get(3).text().trim());
+                        europeCap.setState(elements.get(4).text().trim());
                         return europeCap;
                     } else {
                         return null;

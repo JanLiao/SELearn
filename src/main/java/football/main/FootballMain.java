@@ -18,6 +18,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
@@ -49,6 +51,7 @@ public class FootballMain {
     }
 
     public static void main(String[] args) throws ParseException {
+        String path = "E:/football/save_date";
         // set http proxy
         System.setProperty("http.proxyHost", "localhost");
         System.setProperty("http.proxyPort", "8888");
@@ -70,7 +73,6 @@ public class FootballMain {
             List<Match> matchList = matchs.queryMatchsByDate(curDate);
             System.out.println(curDate + ", " + matchList.size());
             matchList.forEach(match -> {
-                System.out.println(match);
                 AsianOdds asianOdds = new QiuTanAsianOdds();
                 asianOdds.queryAsianOddsByMatchId(match, curDate);
             });
@@ -82,6 +84,18 @@ public class FootballMain {
             })).collect(Collectors.toList());
             System.out.println("filter size = " + matchList1.size());
             matchDao.insertMatchList(matchList1);
+            appendDate(path + File.separator + "date.txt", curDate + "\n");
+        }
+    }
+
+    public static void appendDate(String path, String date) {
+        try {
+            //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
+            FileWriter writer = new FileWriter(path, true);
+            writer.write(date);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

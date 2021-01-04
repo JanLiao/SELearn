@@ -25,11 +25,16 @@ public class JsoupUtil {
     }
 
     public static Document getDocumentByURI(String url) throws IOException {
-        try {
-            TimeUnit.MILLISECONDS.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        System.out.println(url);
+        Document document = JsoupUtil.getDocumentByURL(url);
+        while (document.toString().length() < 20) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(50000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            document = JsoupUtil.getDocumentByURL(url);
         }
-        return JsoupUtil.getDocumentByURL(url);
+        return document;
     }
 }
